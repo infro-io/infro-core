@@ -12,4 +12,4 @@ FROM golang:1.22-alpine
 
 COPY --from=builder /go/bin/infro /go/bin/infro
 
-ENTRYPOINT [ "bin/infro" ]
+ENTRYPOINT [ "infro" ]

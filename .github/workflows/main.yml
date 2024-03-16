@@ -1,4 +1,4 @@
-name: Release GitHub Action
+name: Release Image
 on: push
 
 jobs:

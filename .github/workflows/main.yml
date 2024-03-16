@@ -32,3 +32,4 @@ jobs:
           push: true
           tags: infro-io/infro-core:latest
           labels: ${{ steps.meta.outputs.labels }}
+          context: build

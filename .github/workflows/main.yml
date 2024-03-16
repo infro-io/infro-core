@@ -30,6 +30,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: infro-io/infro-core:latest
+          tags: infrolabs/infro-core:latest
           labels: ${{ steps.meta.outputs.labels }}
           file: build/Dockerfile

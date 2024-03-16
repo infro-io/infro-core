@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: example-helm
+spec:
+  project: default
+  source:
+    path: .
+    repoURL: https://github.com/infro-io/example-helm.git
+    targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml
+  syncPolicy:
+    automated: {}
+  destination:
+    server: https://kubernetes.default.svc

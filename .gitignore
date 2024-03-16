@@ -19,3 +19,12 @@
 
 # Go workspace file
 go.work
+
+# Built go binary
+bin/
+
+# Intellij
+.idea
+
+# Terraform
+.terraform*

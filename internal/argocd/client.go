@@ -84,13 +84,17 @@ func (c *Client) executeDryRun(ctx context.Context, appName string, revision str
 		AppName:   appName,
 		Revision:  revision,
 	})
+	filesChanged := 0
+	if diff != nil {
+		filesChanged = strings.Count(*diff, "\n===== /")
+	}
 	return model.DryRun{
 		DeployerName:   c.cfg.Name,
 		DeployerType:   model.DeployerTypeArgoCD,
 		DeploymentName: appName,
 		Diff:           diff,
 		Err:            err,
-		FilesChanged:   strings.Count(*diff, "\n===== /"),
+		FilesChanged:   filesChanged,
 	}
 }
 
@@ -106,7 +110,7 @@ func getAppDiff(ctx context.Context, opts appDiffOptions) (*string, error) {
 
 	// cli returns exit code 0 and no content if there isn't a diff
 	if err == nil {
-		return nil, &model.NoChangesError{}
+		return nil, nil
 	}
 	var ee *exec.Error
 	if errors.As(err, &ee) {

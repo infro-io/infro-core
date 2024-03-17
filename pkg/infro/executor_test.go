@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
@@ -16,7 +17,7 @@ type mockDeployerClient struct {
 }
 
 func (m *mockDeployerClient) ExecuteDryRuns(_ context.Context, _ model.DryRunOpts) []model.DryRun {
-	return []model.DryRun{}
+	return []model.DryRun{{Diff: lo.ToPtr("diff")}}
 }
 
 type mockVCSClient struct {
@@ -31,6 +32,10 @@ func (m *mockVCSClient) RepoURL(_, _ string) string {
 	return "http://example.org"
 }
 
+func (m *mockVCSClient) ListPullRequests(context.Context, model.ListPullRequestsOpts) ([]model.PullRequest, error) {
+	return nil, nil
+}
+
 func TestCommentDiffs(t *testing.T) {
 	// assemble
 	mockDepClient := new(mockDeployerClient)
@@ -39,7 +44,7 @@ func TestCommentDiffs(t *testing.T) {
 	ex := infro.NewExecutor([]infro.DeployerClient{mockDepClient}, mockVCSClt)
 
 	// act
-	_, err := ex.CommentDiffs(context.Background(), infro.CommentDiffOpts{
+	_, err := ex.Comment(context.Background(), infro.CommentOpts{
 		Revision: "abc123",
 		Owner:    "owner",
 		Repo:     "repo",
@@ -57,7 +62,7 @@ func TestNewExecutorFromConfig_Valid(t *testing.T) {
 			Endpoint:  "example.org",
 			AuthToken: "token",
 		}}},
-		VCS: infro.VCSConfig{Value: infro.GithubConfig{
+		VCS: infro.VCSConfig{Value: &infro.GithubConfig{
 			AuthToken: "token",
 		}},
 	})

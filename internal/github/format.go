@@ -1,9 +1,10 @@
 package github
 
 import (
-	"errors"
+	"bytes"
 	"fmt"
 	"strings"
+	"text/template"
 
 	"github.com/samber/lo"
 
@@ -15,31 +16,56 @@ const (
 )
 
 func Format(revision string, dryRuns []model.DryRun) *string {
-	s := fmt.Sprintf("## Infro diff for %s\n", revision[:7])
-	if len(dryRuns) == 0 {
-		s += "*(no deployments)*"
-		return &s
-	}
+	s := fmt.Sprintf("## Infro diff for %s", revision[:7])
 	for _, dryRun := range dryRuns {
-		icon := fmt.Sprintf("<img src=\"%s\" width=\"20\"/>", getPic(dryRun.DeployerType))
-		s += fmt.Sprintf("%s **%s > %s** %s", icon, dryRun.DeployerName, dryRun.DeploymentName, formatDeployment(dryRun))
+		s += formatDryRun(dryRun)
 	}
 	return &s
 }
 
-func formatDeployment(dryRun model.DryRun) string {
+//nolint:gochecknoglobals // fine for templates
+var diffTemplate, _ = template.New("diff").Parse(`
+{{.icon}} **{{.deployer}} > {{.deployment}}** *({{.files}} files changed)*
+<details{{.open}}>
+
+~~~diff
+{{.diff}}
+~~~
+
+</details>
+`)
+
+//nolint:gochecknoglobals // fine for templates
+var errTemplate, _ = template.New("diff").Parse(`
+{{.icon}} **{{.deployer}} > {{.deployment}}** ❌
+>{{.err}}
+`)
+
+func formatDryRun(dryRun model.DryRun) string {
+	buf := new(bytes.Buffer)
+	icon := fmt.Sprintf("<img src=\"%s\" width=\"20\"/>", getPic(dryRun.DeployerType))
 	if dryRun.Err != nil {
-		if errors.As(dryRun.Err, &model.NoChangesError{}) {
-			return "*(no changes)*\n"
-		}
-		return fmt.Sprintf("❌\n>%s\n\n", dryRun.Err.Error())
+		//nolint:errcheck // checked elsewhere
+		errTemplate.Execute(buf, map[string]any{
+			"icon":       icon,
+			"deployer":   dryRun.DeployerName,
+			"deployment": dryRun.DeploymentName,
+			"err":        dryRun.Err.Error(),
+		})
+		return buf.String()
 	}
 	diffString := strings.Trim(*dryRun.Diff, "\n")
 	lineCount := strings.Count(diffString, "\n")
-	open := lineCount < longDiffLineCount
-	detailsOpen := lo.Ternary(open, " open", "")
-	return fmt.Sprintf("*(%d files changed)*\n<details%s>\n\n~~~diff\n%s\n~~~\n\n</details>\n\n",
-		dryRun.FilesChanged, detailsOpen, diffString)
+	//nolint:errcheck // checked elsewhere
+	diffTemplate.Execute(buf, map[string]any{
+		"icon":       icon,
+		"deployer":   dryRun.DeployerName,
+		"deployment": dryRun.DeploymentName,
+		"files":      dryRun.FilesChanged,
+		"open":       lo.Ternary(lineCount < longDiffLineCount, " open", ""),
+		"diff":       diffString,
+	})
+	return buf.String()
 }
 
 func getPic(deployerType string) string {

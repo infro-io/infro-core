@@ -10,13 +10,13 @@ import (
 	"infro.io/infro-core/pkg/infro"
 )
 
-func NewDiffsCommand() *cobra.Command {
+func NewCommand() *cobra.Command {
 	var config string
 	var repo string
 	var revision string
 	var pullNumber int
 	cmd := &cobra.Command{
-		Use:   "comment diffs",
+		Use:   "comment",
 		Short: "Comment diffs",
 		Long:  "Perform a diff on the configured deployers and comment to a VCS",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -29,7 +29,7 @@ func NewDiffsCommand() *cobra.Command {
 				return err
 			}
 			ownerAndRepo := strings.Split(repo, "/")
-			comment, err := ex.CommentDiffs(cmd.Context(), infro.CommentDiffOpts{
+			comment, err := ex.Comment(cmd.Context(), infro.CommentOpts{
 				Revision:   revision,
 				Owner:      ownerAndRepo[0],
 				Repo:       ownerAndRepo[1],
@@ -38,9 +38,11 @@ func NewDiffsCommand() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			output, err := json.Marshal(comment)
-			cmd.Print(string(output))
-			return err
+			if comment != nil {
+				output, _ := json.Marshal(comment)
+				cmd.Print(string(output))
+			}
+			return nil
 		},
 	}
 	cmd.Flags().StringVar(&config, "config", "", "The config as a string.")

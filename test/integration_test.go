@@ -7,22 +7,28 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/argoproj/argo-cd/v2/pkg/apiclient"
 	"github.com/argoproj/argo-cd/v2/pkg/apiclient/session"
 	"github.com/argoproj/argo-cd/v2/util/io"
 	"github.com/google/go-github/v57/github"
 	"github.com/stretchr/testify/require"
+	"gopkg.in/yaml.v3"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"infro.io/infro-core/cmd/comment"
+	"infro.io/infro-core/cmd/root"
 	"infro.io/infro-core/internal/model"
+	"infro.io/infro-core/pkg/infro"
 )
 
-const argoAddr = "localhost:8080"
+const (
+	argoAddr = "localhost:8080"
+	owner    = "infro-io"
+)
 
 var configTemplate, _ = template.New("config").Parse(`
 deployers:
@@ -38,38 +44,65 @@ vcs:
   authtoken: {{.githubAuthToken}}
 `)
 
-func TestCommentDiffs(t *testing.T) {
+func TestListPullRequests(t *testing.T) {
+	ex, err := getExecutor(context.Background())
+	require.NoError(t, err)
+	updatedSince := time.Date(2024, 1, 16, 14, 0, 0, 0, time.UTC)
+	err = ex.CommentOnPullRequests(context.Background(), owner, updatedSince)
+	require.NoError(t, err)
+}
+
+func TestPoll(_ *testing.T) {
+	// ctx := context.Background()
+	// cmd := root.NewCommand()
+	// cmd.SetArgs([]string{"poll",
+	//	"--owner", owner,
+	//	"--config", getConfig(ctx),
+	// })
+	// cmd.Execute()
+}
+
+func TestComment(t *testing.T) {
 	// assemble
-	owner := "infro-io"
 	repo := "example-helm"
 	ctx := context.Background()
-	cfg := new(bytes.Buffer)
-	githubAuthToken := getGithubAuthTokenOrDie()
-	configTemplate.Execute(cfg, map[string]string{
-		"argoAddr":        argoAddr,
-		"argoAuthToken":   getArgoAuthTokenOrDie(ctx),
-		"githubAuthToken": githubAuthToken,
-	})
-	cmd := comment.NewDiffsCommand()
-	cmd.SetArgs([]string{
+	cmd := root.NewCommand()
+	cmd.SetArgs([]string{"comment",
 		"--repo", owner + "/" + repo,
 		"--revision", "8d508b82cc188ce7c8244bfc280f24d75b4a1e7e",
-		"--config", cfg.String(),
+		"--config", getConfig(ctx),
 		"--pull-number", "1",
 	})
 	out := new(bytes.Buffer)
 	cmd.SetOut(out)
 
 	// act
-	err := cmd.ExecuteContext(ctx)
+	err := cmd.Execute()
 
 	// assert
 	require.NoError(t, err)
 	var cmtMet model.CommentMetadata
 	err = json.Unmarshal(out.Bytes(), &cmtMet)
 	require.NoError(t, err)
-	cmt := getGithubCommentOrDie(ctx, githubAuthToken, owner, repo, cmtMet.CommentID)
+	cmt := getGithubCommentOrDie(ctx, getGithubAuthTokenOrDie(), owner, repo, cmtMet.CommentID)
 	require.Contains(t, *cmt.Body, "my_heart_is: full")
+}
+
+func getExecutor(ctx context.Context) (*infro.Executor, error) {
+	cfgString := getConfig(ctx)
+	var cfg infro.Config
+	yaml.Unmarshal([]byte(cfgString), &cfg)
+	return infro.NewExecutorFromConfig(&cfg)
+}
+
+func getConfig(ctx context.Context) string {
+	cfg := new(bytes.Buffer)
+	configTemplate.Execute(cfg, map[string]string{
+		"argoAddr":        argoAddr,
+		"argoAuthToken":   getArgoAuthTokenOrDie(ctx),
+		"githubAuthToken": getGithubAuthTokenOrDie(),
+	})
+	return cfg.String()
 }
 
 func getArgoAuthTokenOrDie(ctx context.Context) string {

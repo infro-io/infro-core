@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type (
 	UpsertCommentOpts struct {
 		DryRuns    []DryRun
@@ -10,6 +12,15 @@ type (
 	}
 	CommentMetadata struct {
 		CommentID int64 `json:"commentId"`
+	}
+	PullRequest struct {
+		Repo     string
+		Number   int
+		Revision string
+	}
+	ListPullRequestsOpts struct {
+		Owner        string
+		UpdatedSince time.Time
 	}
 )
 

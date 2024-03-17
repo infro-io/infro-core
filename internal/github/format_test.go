@@ -1,6 +1,7 @@
 package github_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/samber/lo"
@@ -20,6 +21,8 @@ const expected = `## Infro diff for 8d508b8
 
 </details>
 
+<img src="https://registry.terraform.io/images/favicons/favicon-32x32.png" width="20"/> **terraform > my-terraform** ❌
+>some dry run error
 `
 
 func TestFormat(t *testing.T) {
@@ -30,6 +33,14 @@ func TestFormat(t *testing.T) {
 			DeploymentName: "my-app",
 			Diff:           lo.ToPtr(">   this_is_a: change"),
 			Err:            nil,
+			FilesChanged:   1,
+		},
+		{
+			DeployerName:   "terraform",
+			DeployerType:   model.DeployerTypeTerraform,
+			DeploymentName: "my-terraform",
+			Diff:           nil,
+			Err:            errors.New("some dry run error"),
 			FilesChanged:   1,
 		},
 	})

@@ -1,9 +1,9 @@
 package main
 
-import "infro.io/infro-core/cmd/comment"
+import "infro.io/infro-core/cmd/root"
 
 func main() {
-	if err := comment.NewDiffsCommand().Execute(); err != nil {
+	if err := root.NewCommand().Execute(); err != nil {
 		panic(err)
 	}
 }

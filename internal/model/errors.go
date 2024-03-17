@@ -3,8 +3,6 @@ package model
 import "fmt"
 
 type (
-	NoChangesError struct {
-	}
 	CliError struct {
 		Reason string
 	}
@@ -12,10 +10,6 @@ type (
 		Reason string
 	}
 )
-
-func (e NoChangesError) Error() string {
-	return "no changes"
-}
 
 func (e CliError) Error() string {
 	return fmt.Sprintf("cli error: %s", e.Reason)

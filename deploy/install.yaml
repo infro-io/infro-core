@@ -1,0 +1,49 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: infro
+  labels:
+    name: infro
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infro
+  namespace: infro
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: infro
+  template:
+    metadata:
+      labels:
+        app: infro
+    spec:
+      containers:
+        - name: infro
+          image: infrolabs/infro-core:latest
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "512m"
+            limits:
+              memory: "1024Mi"
+              cpu: "1024m"
+          args:
+            - poll
+            - --owner
+            - $(owner)
+            - --config
+            - $(config)
+          env:
+            - name: config
+              valueFrom:
+                secretKeyRef:
+                  name: infro-secrets
+                  key: config
+            - name: owner
+              valueFrom:
+                secretKeyRef:
+                  name: infro-secrets
+                  key: owner

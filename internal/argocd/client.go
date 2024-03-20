@@ -38,13 +38,16 @@ func NewClient(cfg *Config) *Client {
 	return &Client{cfg}
 }
 
-func (c *Client) ExecuteDryRuns(ctx context.Context, opts model.DryRunOpts) []model.DryRun {
-	apps, _ := c.listAppsForRepo(ctx, opts.RepoURL)
+func (c *Client) ExecuteDryRuns(ctx context.Context, opts model.DryRunOpts) ([]model.DryRun, error) {
+	apps, err := c.listAppsForRepo(ctx, opts.RepoURL)
+	if err != nil {
+		return nil, err
+	}
 	dryRuns := make([]model.DryRun, len(apps))
 	for i, app := range apps {
 		dryRuns[i] = c.executeDryRun(ctx, app.Name, opts.Revision)
 	}
-	return dryRuns
+	return dryRuns, nil
 }
 
 func (c *Client) listAppsForRepo(ctx context.Context, repoURL string) ([]v1alpha1.Application, error) {
@@ -72,7 +75,7 @@ func (c *Client) listAppsForRepo(ctx context.Context, repoURL string) ([]v1alpha
 		}
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to list argocd applications: %w", err)
+		return nil, fmt.Errorf("failed to list argocd applications for %s: %w", c.cfg.Name, err)
 	}
 	return applications.Items, nil
 }

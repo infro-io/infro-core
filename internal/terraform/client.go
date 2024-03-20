@@ -24,38 +24,40 @@ func NewClient(cfg *Config) *Client {
 	return &Client{cfg}
 }
 
-func (c *Client) ExecuteDryRuns(ctx context.Context, _ model.DryRunOpts) []model.DryRun {
-	return []model.DryRun{c.executeDryRun(ctx)}
+func (c *Client) ExecuteDryRuns(ctx context.Context, _ model.DryRunOpts) ([]model.DryRun, error) {
+	dryRun, err := c.executeDryRun(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return []model.DryRun{*dryRun}, nil
 }
 
-func (c *Client) executeDryRun(ctx context.Context) model.DryRun {
-	dryRun := model.DryRun{
+func (c *Client) executeDryRun(ctx context.Context) (*model.DryRun, error) {
+	dryRun := &model.DryRun{
 		DeployerName:   "terraform",
 		DeployerType:   model.DeployerTypeTerraform,
 		DeploymentName: c.cfg.Name,
 	}
 	tf, err := tfexec.NewTerraform(c.cfg.Workdir, "terraform")
 	if err != nil {
-		dryRun.Err = err
-		return dryRun
+		return nil, err
 	}
 	if err = tf.Init(ctx, tfexec.Upgrade(true)); err != nil {
-		dryRun.Err = err
-		return dryRun
+		return nil, err
 	}
 	buf := new(bytes.Buffer)
 	tf.SetStdout(buf)
 	changed, err := tf.Plan(ctx)
 	if err != nil {
 		dryRun.Err = err
-		return dryRun
+		return dryRun, nil //nolint:nilerr // on purpose here
 	}
 	if changed {
 		diff := formatDiffMarkdown(buf.String())
 		dryRun.Diff = &diff
 		dryRun.FilesChanged = strings.Count(diff, "\n  #")
 	}
-	return dryRun
+	return dryRun, nil
 }
 
 func formatDiffMarkdown(diff string) string {

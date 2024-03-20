@@ -20,7 +20,7 @@ type (
 		vcsClient       VCSClient
 	}
 	DeployerClient interface {
-		ExecuteDryRuns(context.Context, model.DryRunOpts) []model.DryRun
+		ExecuteDryRuns(context.Context, model.DryRunOpts) ([]model.DryRun, error)
 	}
 	VCSClient interface {
 		RepoURL(owner string, repo string) string
@@ -70,10 +70,13 @@ func (e *Executor) Comment(ctx context.Context, opts CommentOpts) (*model.Commen
 
 	var dryRuns []model.DryRun
 	for _, depClient := range e.deployerClients {
-		newDryRuns := depClient.ExecuteDryRuns(ctx, model.DryRunOpts{
+		newDryRuns, err := depClient.ExecuteDryRuns(ctx, model.DryRunOpts{
 			Revision: opts.Revision,
 			RepoURL:  e.vcsClient.RepoURL(opts.Owner, opts.Repo),
 		})
+		if err != nil {
+			log.Error("failed to execute dry runs", zap.Error(err))
+		}
 		for _, newDryRun := range newDryRuns {
 			if newDryRun.Diff == nil && newDryRun.Err == nil {
 				log.Info("no diff for deployment",

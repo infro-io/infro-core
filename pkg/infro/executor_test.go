@@ -16,8 +16,8 @@ type mockDeployerClient struct {
 	mock.Mock
 }
 
-func (m *mockDeployerClient) ExecuteDryRuns(_ context.Context, _ model.DryRunOpts) []model.DryRun {
-	return []model.DryRun{{Diff: lo.ToPtr("diff")}}
+func (m *mockDeployerClient) ExecuteDryRuns(_ context.Context, _ model.DryRunOpts) ([]model.DryRun, error) {
+	return []model.DryRun{{Diff: lo.ToPtr("diff")}}, nil
 }
 
 type mockVCSClient struct {

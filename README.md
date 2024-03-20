@@ -134,7 +134,7 @@ kubectl create namespace infro
 kubectl apply -n infro -f https://raw.githubusercontent.com/infro-io/infro-core/main/deploy/install.yaml
 ```
 or you can install it with Kustomize:
-```shell
+```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 

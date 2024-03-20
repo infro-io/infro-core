@@ -14,8 +14,8 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 
-	"infro.io/infro-core/internal/model"
-	"infro.io/infro-core/internal/xzap"
+	"github.com/infro-io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/xzap"
 )
 
 type (

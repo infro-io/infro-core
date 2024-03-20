@@ -20,9 +20,9 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"infro.io/infro-core/cmd/root"
-	"infro.io/infro-core/internal/model"
-	"infro.io/infro-core/pkg/infro"
+	"github.com/infro-io/infro-core/cmd/root"
+	"github.com/infro-io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/pkg/infro"
 )
 
 const (

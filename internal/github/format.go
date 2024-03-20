@@ -8,7 +8,7 @@ import (
 
 	"github.com/samber/lo"
 
-	"infro.io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/model"
 )
 
 const (

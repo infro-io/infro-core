@@ -5,10 +5,10 @@ import (
 
 	"github.com/go-playground/validator/v10"
 
-	"infro.io/infro-core/internal/argocd"
-	"infro.io/infro-core/internal/github"
-	"infro.io/infro-core/internal/model"
-	"infro.io/infro-core/internal/terraform"
+	"github.com/infro-io/infro-core/internal/argocd"
+	"github.com/infro-io/infro-core/internal/github"
+	"github.com/infro-io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/terraform"
 )
 
 type (

@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-exec/tfexec"
 
-	"infro.io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/model"
 )
 
 type (

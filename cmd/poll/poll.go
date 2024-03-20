@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 
-	"infro.io/infro-core/pkg/infro"
+	"github.com/infro-io/infro-core/pkg/infro"
 )
 
 func NewCommand() *cobra.Command {

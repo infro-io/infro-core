@@ -1,4 +1,4 @@
-module infro.io/infro-core
+module github.com/infro-io/infro-core
 
 go 1.22.0
 

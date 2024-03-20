@@ -4,9 +4,9 @@ import (
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 
-	"infro.io/infro-core/cmd/comment"
-	"infro.io/infro-core/cmd/poll"
-	"infro.io/infro-core/internal/xzap"
+	"github.com/infro-io/infro-core/cmd/comment"
+	"github.com/infro-io/infro-core/cmd/poll"
+	"github.com/infro-io/infro-core/internal/xzap"
 )
 
 func NewCommand() *cobra.Command {

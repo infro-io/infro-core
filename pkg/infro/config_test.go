@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gopkg.in/yaml.v3"
 
-	"infro.io/infro-core/pkg/infro"
+	"github.com/infro-io/infro-core/pkg/infro"
 )
 
 const yamlConfig = `

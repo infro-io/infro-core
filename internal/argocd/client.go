@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"infro.io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/model"
 )
 
 type (

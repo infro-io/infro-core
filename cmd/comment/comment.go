@@ -7,7 +7,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/util/json"
 
-	"infro.io/infro-core/pkg/infro"
+	"github.com/infro-io/infro-core/pkg/infro"
 )
 
 func NewCommand() *cobra.Command {

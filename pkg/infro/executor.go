@@ -7,11 +7,11 @@ import (
 	"github.com/go-playground/validator/v10"
 	"go.uber.org/zap"
 
-	"infro.io/infro-core/internal/argocd"
-	"infro.io/infro-core/internal/github"
-	"infro.io/infro-core/internal/model"
-	"infro.io/infro-core/internal/terraform"
-	"infro.io/infro-core/internal/xzap"
+	"github.com/infro-io/infro-core/internal/argocd"
+	"github.com/infro-io/infro-core/internal/github"
+	"github.com/infro-io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/terraform"
+	"github.com/infro-io/infro-core/internal/xzap"
 )
 
 type (

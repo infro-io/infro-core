@@ -7,8 +7,8 @@ import (
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 
-	"infro.io/infro-core/internal/github"
-	"infro.io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/internal/github"
+	"github.com/infro-io/infro-core/internal/model"
 )
 
 const expected = `## Infro diff for 8d508b8

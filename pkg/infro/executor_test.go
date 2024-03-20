@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
-	"infro.io/infro-core/internal/model"
-	"infro.io/infro-core/pkg/infro"
+	"github.com/infro-io/infro-core/internal/model"
+	"github.com/infro-io/infro-core/pkg/infro"
 )
 
 type mockDeployerClient struct {

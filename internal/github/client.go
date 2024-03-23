@@ -133,7 +133,7 @@ func (c Client) ListPullRequests(ctx context.Context, opts model.ListPullRequest
 	return pulls, nil
 }
 
-func (c Client) UpsertComment(ctx context.Context, opts model.UpsertCommentOpts) (*model.CommentMetadata, error) {
+func (c Client) UpsertComment(ctx context.Context, opts model.UpsertCommentOpts) (*model.Comment, error) {
 	log := xzap.FromContext(ctx)
 	client := gh.NewClient(nil).WithAuthToken(c.cfg.AuthToken)
 	comments, _, err := client.Issues.ListComments(ctx, opts.Owner, opts.Repo, opts.PullNumber, nil)
@@ -158,7 +158,7 @@ func (c Client) UpsertComment(ctx context.Context, opts model.UpsertCommentOpts)
 	if err != nil {
 		return nil, err
 	}
-	return &model.CommentMetadata{CommentID: *comment.ID}, nil
+	return &model.Comment{ID: *comment.ID, Body: body}, nil
 }
 
 func getCommentWithSubstring(comments []*gh.IssueComment, substring string) *gh.IssueComment {

@@ -10,8 +10,9 @@ type (
 		PullNumber int
 		Revision   string
 	}
-	CommentMetadata struct {
-		CommentID int64 `json:"commentId"`
+	Comment struct {
+		ID   int64   `json:"id"`
+		Body *string `json:"body"`
 	}
 	PullRequest struct {
 		Repo     string

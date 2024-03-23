@@ -24,7 +24,7 @@ type mockVCSClient struct {
 	mock.Mock
 }
 
-func (m *mockVCSClient) UpsertComment(ctx context.Context, opts model.UpsertCommentOpts) (*model.CommentMetadata, error) {
+func (m *mockVCSClient) UpsertComment(ctx context.Context, opts model.UpsertCommentOpts) (*infro.Comment, error) {
 	return nil, m.Called(ctx, opts).Error(0)
 }
 

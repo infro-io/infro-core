@@ -24,7 +24,7 @@ type (
 	}
 	VCSClient interface {
 		RepoURL(owner string, repo string) string
-		UpsertComment(context.Context, model.UpsertCommentOpts) (*model.CommentMetadata, error)
+		UpsertComment(context.Context, model.UpsertCommentOpts) (*Comment, error)
 		ListPullRequests(context.Context, model.ListPullRequestsOpts) ([]model.PullRequest, error)
 	}
 	CommentOpts struct {
@@ -33,6 +33,7 @@ type (
 		Repo       string
 		PullNumber int
 	}
+	Comment = model.Comment
 )
 
 func NewExecutorFromConfig(cfg *Config) (*Executor, error) {
@@ -60,7 +61,7 @@ func NewExecutor(depClients []DeployerClient, vcsClient VCSClient) *Executor {
 	return &Executor{depClients, vcsClient}
 }
 
-func (e *Executor) Comment(ctx context.Context, opts CommentOpts) (*model.CommentMetadata, error) {
+func (e *Executor) Comment(ctx context.Context, opts CommentOpts) (*Comment, error) {
 	log := xzap.FromContext(ctx)
 	log = log.With(
 		zap.String("repo", opts.Repo),

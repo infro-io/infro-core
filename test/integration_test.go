@@ -81,10 +81,10 @@ func TestComment(t *testing.T) {
 
 	// assert
 	require.NoError(t, err)
-	var cmtMet model.CommentMetadata
-	err = json.Unmarshal(out.Bytes(), &cmtMet)
+	var comment model.Comment
+	err = json.Unmarshal(out.Bytes(), &comment)
 	require.NoError(t, err)
-	cmt := getGithubCommentOrDie(ctx, getGithubAuthTokenOrDie(), owner, repo, cmtMet.CommentID)
+	cmt := getGithubCommentOrDie(ctx, getGithubAuthTokenOrDie(), owner, repo, comment.ID)
 	require.Contains(t, *cmt.Body, "my_heart_is: full")
 }
 

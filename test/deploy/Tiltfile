@@ -20,10 +20,17 @@ k8s_yaml(secret_from_dict("infro-secrets", "infro", inputs={
     'config': config,
     'owner': 'infro-io',
 }))
-k8s_yaml('../deploy/install.yaml')
+k8s_yaml('../../deploy/install.yaml')
 
 # deploy local argocd
-k8s_yaml(kustomize('./deploy/argocd'))
+k8s_yaml(kustomize('./argocd'))
 
 # expose argocd api server
 k8s_resource(workload='argocd-server', port_forwards=8080)
+
+# wait for argocd CRDs
+k8s_resource(
+  objects=['example-helm:application'],
+  resource_deps=['argocd-server'],
+  new_name='example-helm-application',
+)

@@ -195,8 +195,8 @@ deployers:
   - type: terraform
     workdir: <TERRAFORM_WORKDIR>
 vcs:
-  - type: github
-    authtoken: <GITHUB_TOKEN>
+  type: github
+  authtoken: <GITHUB_TOKEN>
 ```
 
 ### `argocd`:

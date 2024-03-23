@@ -34,5 +34,4 @@ jobs:
           file: build/Dockerfile
           tags: |
             infrolabs/infro-core:latest
-            infrolabs/infro-core:${{ steps.vars.outputs.tag }}
             infrolabs/infro-core:${{ github.sha }}

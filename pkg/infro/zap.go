@@ -9,6 +9,6 @@ import (
 )
 
 // NewZapContext sets the logger that Infro will use.
-func NewZapContext(ctx context.Context, log *zap.Logger) {
-	xzap.NewContext(ctx, log)
+func NewZapContext(ctx context.Context, log *zap.Logger) context.Context {
+	return xzap.NewContext(ctx, log)
 }

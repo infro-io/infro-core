@@ -128,9 +128,32 @@ More information about the configuration [here](#configuration).
 
 ### Self-hosted
 
-Infro can be installed into your Kubernetes cluster by using kubectl:
+Infro can be installed into your Kubernetes cluster by using kubectl or Kustomize.
+First save the config file as a Kubernetes secret in `infro-secrets.yaml`:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: infro-secrets
+data:
+  owner: <GITHUB_ORG_OR_USER>
+  config: | 
+    deployers:
+    - type: argocd
+      name: my-cluster
+      endpoint: <ARGOCD_ENDPOINT>
+      authtoken: <ARGOCD_TOKEN>
+    vcs:
+      type: github
+      authtoken: <GITHUB_TOKEN>
+```
+Then add them to the infro namespace:
 ```shell
 kubectl create namespace infro
+kubectl apply -n infro -f infro-secrets.yaml
+```
+Then create the infro namespace and install the deployment:
+```shell
 kubectl apply -n infro -f https://raw.githubusercontent.com/infro-io/infro-core/main/deploy/install.yaml
 ```
 or you can install it with Kustomize:

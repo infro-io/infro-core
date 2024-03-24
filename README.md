@@ -128,6 +128,7 @@ More information about the configuration [here](#configuration).
 
 ### Self-hosted
 
+The self-hosted deployment polls the version control system for new pull requests and comments diffs on the ones it finds ([more info](#poll-mode)).
 Infro can be installed into your Kubernetes cluster by using kubectl or Kustomize.
 First save the config file as a Kubernetes secret in `infro-secrets.yaml`:
 ```yaml

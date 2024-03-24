@@ -23,7 +23,7 @@ By integrating with different IaC providers, Infro provides a clear, holistic vi
 
 ## Features
 
-Infro supports running dry runs on different IaC providers and publishing results to different version control systems:
+Infro supports running dry runs on different IaC providers and publishing results to pull requests for different version control systems:
 
 |                 | GitHub Action | Self-hosted | Infro Cloud |
 |-----------------|---------------|-------------|-------------|

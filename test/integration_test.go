@@ -36,9 +36,6 @@ deployers:
     name: my-argo-managed-cluster
     endpoint: {{.argoAddr}}
     authtoken: {{.argoAuthToken}}
-  - type: terraform
-    name: my-tf-managed-infra
-    workdir: ./terraform
 vcs:
   type: github
   authtoken: {{.githubAuthToken}}
@@ -86,6 +83,32 @@ func TestComment(t *testing.T) {
 	require.NoError(t, err)
 	cmt := getGithubCommentOrDie(ctx, getGithubAuthTokenOrDie(), owner, repo, comment.ID)
 	require.Contains(t, *cmt.Body, "my_heart_is: full")
+}
+
+func TestComment_Failed(t *testing.T) {
+	// assemble
+	repo := "example-helm"
+	ctx := context.Background()
+	cmd := root.NewCommand()
+	cmd.SetArgs([]string{"comment",
+		"--repo", owner + "/" + repo,
+		"--revision", "7d2469c1f3a6e56b08f9492c8af39b0c53eb3024",
+		"--config", getConfig(ctx),
+		"--pull-number", "5",
+	})
+	out := new(bytes.Buffer)
+	cmd.SetOut(out)
+
+	// act
+	err := cmd.Execute()
+
+	// assert
+	require.NoError(t, err)
+	var comment model.Comment
+	err = json.Unmarshal(out.Bytes(), &comment)
+	require.NoError(t, err)
+	cmt := getGithubCommentOrDie(ctx, getGithubAuthTokenOrDie(), owner, repo, comment.ID)
+	require.Contains(t, *cmt.Body, "diff error:")
 }
 
 func getExecutor(ctx context.Context) (*infro.Executor, error) {

@@ -126,6 +126,7 @@ func getAppDiff(ctx context.Context, opts appDiffOptions) (*string, error) {
 		if xe.ExitCode() == 1 {
 			return diff, nil
 		}
+		return nil, &model.DiffError{Reason: *diff}
 	}
-	return nil, &model.DiffError{Reason: *diff}
+	return nil, err
 }

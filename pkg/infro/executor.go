@@ -23,7 +23,8 @@ type (
 		ExecuteDryRuns(context.Context, model.DryRunOpts) ([]model.DryRun, error)
 	}
 	VCSClient interface {
-		RepoURL(owner string, repo string) string
+		RepoURLHTTPS(owner string, repo string) string
+		RepoURLSSH(owner string, repo string) string
 		UpsertComment(context.Context, model.UpsertCommentOpts) (*Comment, error)
 		ListPullRequests(context.Context, model.ListPullRequestsOpts) ([]model.PullRequest, error)
 	}
@@ -70,22 +71,25 @@ func (e *Executor) Comment(ctx context.Context, opts CommentOpts) (*Comment, err
 	ctx = xzap.NewContext(ctx, log)
 
 	var dryRuns []model.DryRun
+	repoURLs := []string{e.vcsClient.RepoURLHTTPS(opts.Owner, opts.Repo), e.vcsClient.RepoURLSSH(opts.Owner, opts.Repo)}
 	for _, depClient := range e.deployerClients {
-		newDryRuns, err := depClient.ExecuteDryRuns(ctx, model.DryRunOpts{
-			Revision: opts.Revision,
-			RepoURL:  e.vcsClient.RepoURL(opts.Owner, opts.Repo),
-		})
-		if err != nil {
-			log.Error("failed to execute dry runs", zap.Error(err))
-		}
-		for _, newDryRun := range newDryRuns {
-			if newDryRun.Diff == nil && newDryRun.Err == nil {
-				log.Info("no diff for deployment",
-					zap.String("deployer", newDryRun.DeployerName),
-					zap.String("deployment", newDryRun.DeploymentName))
-				continue
+		for _, repoURL := range repoURLs {
+			newDryRuns, err := depClient.ExecuteDryRuns(ctx, model.DryRunOpts{
+				Revision: opts.Revision,
+				RepoURL:  repoURL,
+			})
+			if err != nil {
+				log.Error("failed to execute dry runs", zap.Error(err))
 			}
-			dryRuns = append(dryRuns, newDryRun)
+			for _, newDryRun := range newDryRuns {
+				if newDryRun.Diff == nil && newDryRun.Err == nil {
+					log.Info("no diff for deployment",
+						zap.String("deployer", newDryRun.DeployerName),
+						zap.String("deployment", newDryRun.DeploymentName))
+					continue
+				}
+				dryRuns = append(dryRuns, newDryRun)
+			}
 		}
 	}
 	if len(dryRuns) == 0 {

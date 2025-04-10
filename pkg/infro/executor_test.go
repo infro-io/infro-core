@@ -28,8 +28,12 @@ func (m *mockVCSClient) UpsertComment(ctx context.Context, opts model.UpsertComm
 	return nil, m.Called(ctx, opts).Error(0)
 }
 
-func (m *mockVCSClient) RepoURL(_, _ string) string {
+func (m *mockVCSClient) RepoURLHTTPS(_, _ string) string {
 	return "http://example.org"
+}
+
+func (m *mockVCSClient) RepoURLSSH(_, _ string) string {
+	return "git@example.org"
 }
 
 func (m *mockVCSClient) ListPullRequests(context.Context, model.ListPullRequestsOpts) ([]model.PullRequest, error) {

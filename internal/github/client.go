@@ -40,8 +40,12 @@ func NewClient(cfg *Config) *Client {
 	return &Client{cfg}
 }
 
-func (c Client) RepoURL(owner string, repo string) string {
+func (c Client) RepoURLHTTPS(owner string, repo string) string {
 	return fmt.Sprintf("https://github.com/%s/%s.git", owner, repo)
+}
+
+func (c Client) RepoURLSSH(owner string, repo string) string {
+	return fmt.Sprintf("git@github.com:%s/%s.git", owner, repo)
 }
 
 //nolint:gochecknoglobals // fine for templates

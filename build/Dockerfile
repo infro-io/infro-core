@@ -1,4 +1,4 @@
-FROM golang:1.22-alpine as builder
+FROM golang:1.26rc1-alpine as builder
 
 # Download and cache dependencies
 COPY go.mod go.sum ./
@@ -12,7 +12,7 @@ RUN chmod +x /go/bin/argocd
 COPY . .
 RUN go build -o /go/bin/infro ./cmd/main.go
 
-FROM golang:1.22-alpine
+FROM golang:1.26rc1-alpine
 
 COPY --from=builder /go/bin/infro /go/bin/infro
 COPY --from=builder /go/bin/argocd /go/bin/argocd
